@@ -10,4 +10,4 @@ RUN npm run build
 
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
-ENV REACT_APP_SIMPLE_APP_SERVER_URL=http://localhost:8082
+ENV REACT_APP_SIMPLE_APP_SERVER_URL=http://34.86.78.212:80
