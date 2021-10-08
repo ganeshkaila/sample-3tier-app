@@ -1,0 +1,44 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "simple-app-server"
+  namespace: "default"
+  labels:
+    app: "simple-app-server"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "simple-app-server"
+  template:
+    metadata:
+      labels:
+        app: "simple-app-server"
+    spec:
+      containers:
+        - name: "simple-app-server"
+          image: "ganeshkaila/simple-app-server:v0.2"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: APP_PORT
+              value: "8081"
+            # For POSTGRES_HOST,
+            # k8s endpoint created for PostgreSQL Server
+            - name: POSTGRES_HOST
+              value: pgdbhost
+            - name: POSTGRES_DB
+              value: mydb
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_PORT
+              value: "5432"
+            # For WEB_SERVER_HOST,
+            # To avoid CROS error, edit /etc/hosts file
+            # for pointing example.com to actual application IP.
+            - name: WEB_SERVER_HOST
+              value: http://example.com:8080

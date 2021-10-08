@@ -1,0 +1,27 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "simple-web-ui"
+  namespace: "default"
+  labels:
+    app: "simple-web-ui"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "simple-web-ui"
+  template:
+    metadata:
+      labels:
+        app: "simple-web-ui"
+    spec:
+      containers:
+        - name: "simple-web-ui"
+          image: "ganeshkaila/simple-web-ui:v0.2"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: REACT_APP_SIMPLE_APP_SERVER_URL
+              value: http://simple-app-server
