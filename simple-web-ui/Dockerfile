@@ -9,5 +9,21 @@ COPY . .
 RUN npm run build
 
 FROM nginx:alpine
+
+# Copy required files
 COPY --from=build /app/build /usr/share/nginx/html
-ENV REACT_APP_SIMPLE_APP_SERVER_URL=http://34.86.78.212:80
+COPY nginx-default.conf.template /tmp/nginx-default.conf.template
+COPY docker-entrypoint.sh /
+
+# Required environment variables
+# ENV NGINX_BACKEND_1_HOST="localhost"
+# ENV NGINX_BACKEND_1_PORT="8081"
+# ENV NGINX_HOST="localhost"
+# ENV NGINX_PORT="8080"
+
+# Make entrypoint.sh as executable
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
+

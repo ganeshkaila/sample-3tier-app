@@ -6,7 +6,7 @@ metadata:
   namespace: "default"
 subsets:
   - addresses:
-      - ip: 34.86.7.175
+      - ip: 34.145.160.8 # eks
     ports:
       - port: 5432
 ---
@@ -15,6 +15,8 @@ kind: "Service"
 metadata:
   name: "pgdbhost"
   namespace: "default"
+  # annotations:
+  #   networking.gke.io/load-balancer-type: "Internal"
 spec:
   ports:
     - protocol: TCP

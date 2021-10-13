@@ -1,31 +1,47 @@
 const express = require("express")
 const app = express()
-
+var cors = require("cors")
 const dotenv = require("dotenv")
+const data = require("./db/hanlder.js")
+
 dotenv.config()
 
 const port = process.env.APP_PORT
-const webserver_host = process.env.WEB_SERVER_HOST
+const web_server_host = process.env.WEB_SERVER_HOST
 
-const data = require("./db/hanlder.js")
+var whitelist = [
+	"http://localhost",
+	"http://127.0.0.1",
+	"http://localhost:80",
+	"http://127.0.0.1:80",
+	"http://localhost:8082",
+	"http://127.0.0.1:8082",
+	"http://localhost:8081",
+	"http://127.0.0.1:8081",
+	"http://34.150.211.237.nip.io",
+	"http://34.86.78.212",
+	web_server_host
+]
+var corsOptionsDelegate = function (req, callback) {
+	var corsOptions
+	if (whitelist.indexOf(req.header("Origin")) !== -1) {
+		corsOptions = {origin: true} // reflect (enable) the requested origin in the CORS response
+	} else {
+		corsOptions = {origin: false} // disable CORS for this request
+	}
+	callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+console.log()
 
 app.use(express.json())
-app.use(function (req, res, next) {
-	res.setHeader("Access-Control-Allow-Origin", webserver_host)
-	res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-	res.setHeader(
-		"Access-Control-Allow-Headers",
-		"Content-Type, Access-Control-Allow-Headers"
-	)
-	next()
-})
 
 app.get("/healthz", (req, res) => {
 	res.status(200).send({status: "OK"})
 })
 
 // get all users
-app.get("/users", (req, res) => {
+app.get("/users", cors(corsOptionsDelegate), (req, res) => {
 	if (req.query.name != null) {
 		data
 			.findByName(req.query.name)
@@ -48,7 +64,7 @@ app.get("/users", (req, res) => {
 })
 
 // get user by id
-app.get("/users/:id", (req, res) => {
+app.get("/users/:id", cors(corsOptionsDelegate), (req, res) => {
 	data
 		.getUserByID(req.params["id"])
 		.then((response) => {
@@ -60,7 +76,7 @@ app.get("/users/:id", (req, res) => {
 })
 
 // create user
-app.post("/users", (req, res) => {
+app.post("/users", cors(corsOptionsDelegate), (req, res) => {
 	data
 		.createUser(req.body)
 		.then((response) => {
@@ -72,7 +88,7 @@ app.post("/users", (req, res) => {
 })
 
 // update user
-app.put("/users/:id", (req, res) => {
+app.put("/users/:id", cors(corsOptionsDelegate), (req, res) => {
 	data
 		.updateUser(req.params["id"], req.body)
 		.then((response) => {
@@ -83,7 +99,7 @@ app.put("/users/:id", (req, res) => {
 		})
 })
 
-app.delete("/users/:id", (req, res) => {
+app.delete("/users/:id", cors(corsOptionsDelegate), (req, res) => {
 	data
 		.deleteUser(req.params["id"])
 		.then((response) => {
@@ -94,7 +110,7 @@ app.delete("/users/:id", (req, res) => {
 		})
 })
 
-app.delete("/users", (req, res) => {
+app.delete("/users", cors(corsOptionsDelegate), (req, res) => {
 	data
 		.deleteAllUsers()
 		.then((response) => {

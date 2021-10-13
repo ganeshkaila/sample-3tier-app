@@ -22,11 +22,13 @@ const pool = new Pool({
 	connectionString
 })
 
-pool.query("SELECT NOW()", (err, res) => {
-	if (err) {
-		reject(err)
-	}
-	console.log("Database connection successful.")
+new Promise(function (resolve, reject) {
+	pool.query("SELECT NOW()", (err, res) => {
+		if (err) {
+			reject(err)
+		}
+		console.log("Database connection successful.")
+	})
 })
 
 module.exports = pool

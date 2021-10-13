@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: "simple-app-server"
-          image: "ganeshkaila/simple-app-server:v0.2"
+          image: "ganeshkaila/simple-app-server:amd64"
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
@@ -37,8 +37,23 @@ spec:
               value: password
             - name: POSTGRES_PORT
               value: "5432"
-            # For WEB_SERVER_HOST,
-            # To avoid CROS error, edit /etc/hosts file
-            # for pointing example.com to actual application IP.
             - name: WEB_SERVER_HOST
-              value: http://example.com:8080
+              value: "http://34.86.78.212"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "simple-app-server"
+  namespace: "default"
+  # annotations:
+  #   networking.gke.io/load-balancer-type: "Internal"
+  labels:
+    app: "simple-app-server"
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8081
+  selector:
+    app: "simple-app-server"
+  type: "ClusterIP"

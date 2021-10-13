@@ -1,0 +1,51 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "simple-web-ui"
+  namespace: "default"
+  labels:
+    app: "simple-web-ui"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "simple-web-ui"
+  template:
+    metadata:
+      labels:
+        app: "simple-web-ui"
+    spec:
+      containers:
+        - name: "simple-web-ui"
+          image: "ganeshkaila/simple-web-ui:amd64"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: NGINX_HOST
+              value: "localhost"
+            - name: NGINX_PORT
+              value: "80"
+            - name: NGINX_BACKEND_1_HOST
+              value: app-server.34.150.211.237.nip.io
+            - name: NGINX_BACKEND_1_PORT
+              value: "80"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "simple-web-ui"
+  namespace: "default"
+  # annotations:
+  #   networking.gke.io/load-balancer-type: "Internal"
+  labels:
+    app: "simple-web-ui"
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 80
+  selector:
+    app: "simple-web-ui"
+  type: "LoadBalancer"
